@@ -1,0 +1,33 @@
+- hosts: all
+  tasks:
+    - name: "Create a new repository: {{repository_name}}"
+      uri:
+        url:   https://api.github.com/orgs/{{organization_name}}/repos
+        method: POST
+        headers:
+         Accept: application/vnd.github+json"
+         Authorization: Bearer {{PAT}}
+        body_format: json
+        body:
+         name: "{{repository_name}}"
+         description: "{{repository_name}} was created using an ansible job"
+         homepage: "https://github.com"
+         private: true
+         has_issues: true
+         has_projects: true
+         has_wiki: true
+        status_code: 201
+
+
+    - name: "Add a collaborator {{collaborators}}"
+      uri:
+       url: https://api.github.com/repos/{{organization_name}}/{{repository_name}}/collaborators/{{item}}
+       method: PUT
+       body_format: json
+       headers:
+        Accept: application/vnd.github+json"
+        Authorization: Bearer {{PAT}}
+       body:
+        permission: admin
+       status_code: 204
+      loop: "{{ collaborators }}"
