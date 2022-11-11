@@ -1,0 +1,23 @@
+- hosts: all
+  vars:
+   apps:
+    npp:
+     name: Notepad++
+     url: https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.4.6/npp.8.4.6.Installer.x64.exe
+     file: npp.8.4.6.Installer.x64.exe
+     install_cmd: npp.8.4.6.Installer.x64.exe /S
+     uninstall_cmd: '"c:\Progra~1\Notepad++\uninstall.exe" /S'
+    chrome:
+     name: Google Chrome
+     url: https://dl.google.com/tag/s/appguid%3D%7B8A69D345-D564-463C-AFF1-A69D9E530F96%7D%26iid%3D%7B970D9FDE-8D1C-E041-B7D1-F6472D43C116%7D%26lang%3Den%26browser%3D4%26usagestats%3D0%26appname%3DGoogle%2520Chrome%26needsadmin%3Dtrue%26ap%3Dx64-stable-statsdef_0%26brand%3DGCEB/dl/chrome/install/GoogleChromeEnterpriseBundle64.zip
+     install_cmd:
+  tasks:
+    - name: Download {{apps[selected]['name']}}
+      win_command: cmd /c curl -L -v -o c:\temp\{{apps[selected]['file']}} {{apps[selected]['url']}}
+
+    - name: Install {{apps[selected]['name']}}
+      win_command: c:\temp\{{apps[selected]['install_cmd']}}
+
+    - name: Uninstall {{apps[selected]['name']}}
+      win_command: cmd /c "{{apps[selected]['uninstall_cmd']}}"
+      register: result
