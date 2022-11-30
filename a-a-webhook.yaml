@@ -1,0 +1,25 @@
+---
+- name: Listen for events on a webhook from Appsmith
+  hosts: all
+
+  sources:
+    - ansible.eda.webhook:
+        host: 0.0.0.0
+        port: 5001
+
+  rules:
+    - name: Add GitHub Repo
+      condition: event.payload.job == "add_github_repo"
+      action:
+        run_playbook:
+          name: github/add_repository.yaml
+          organization_name: "{{event.payload.organization}}"
+          repository_name: "{{event.payload.repository_name}}"
+          collaborators: "{{event.payload.collaborators}}"
+          
+    - name: Add Windows application
+      condition: event.payload.job == "add_github_repo"
+      action:
+        run_playbook:
+          name: windows-app-management/install_application.yaml
+          selected: "{{event.payload.app}}"          
